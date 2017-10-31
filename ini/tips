@@ -1,0 +1,17 @@
+1) Change root password
+	# passwd newPassword
+
+2) Change database root password (default - root)
+	# mysql -u root -p -e "use mysql; update user set password=PASSWORD('your_new_password') where User='root'; flush privileges;"
+
+3) Cron and Redis are disabled by default
+	# supervisorctl
+	>start cron (redis)
+
+4) Quick tips to Backup and Restore DB
+	Backup
+	# mysqldump --opt --user=${USER} --password=${PASS} ${DATABASE} > ${FILE}
+	
+	Restore
+	# mysqladmin -u root -p create mytestdatabase
+	# mysql -u root -p mytestdatabase < dbbackup.sql
