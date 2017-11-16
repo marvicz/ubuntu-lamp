@@ -13,7 +13,7 @@ RUN apt-get install apt-utils -y
 RUN apt-get upgrade -y
 
 # Few handy utilities
-RUN apt-get install nano snmp build-essential tcl --no-install-recommends -y
+RUN apt-get install nano snmp tcl --no-install-recommends -y
 
 # Set root password: root
 # ..password been hash generated using this command: openssl passwd -1 -salt marvis root
@@ -165,22 +165,18 @@ RUN echo "stderr_events_enabled=true"                     >> /etc/supervisor/con
 
 # Build Redis
 # --------------------------------------------------------------------------------------------------------
-RUN wget -O redis.tar.gz "http://download.redis.io/redis-stable.tar.gz"
-RUN mkdir -p /usr/src/redis
-RUN tar -xzf redis.tar.gz -C /usr/src/redis --strip-components=1
-RUN rm redis.tar.gz
-RUN make -C /usr/src/redis -j "$(nproc)"
-RUN make -C /usr/src/redis install
+RUN apt-get install redis-server -y
+RUN apt-get install php-redis -y
 
 # Configure Redis
-RUN mkdir /etc/redis
-RUN cp /usr/src/redis/redis.conf /etc/redis/
-RUN sed -ri 's/supervised no/supervised auto/g' /etc/redis/redis.conf
+RUN echo "maxmemory 128mb"		     >> /etc/redis/redis.conf
+RUN echo "maxmemory-policy allkeys-lru"	     >> /etc/redis/redis.conf
+RUN sed -ri 's/daemonize yes/daemonize no/g' /etc/redis/redis.conf
 
 
 # Redis start via Supervisor
 RUN echo "[program:redis]"                         		  			>> /etc/supervisor/conf.d/supervisord-redis.conf
-RUN echo "command=/bin/bash -c \"/usr/local/bin/redis-server /etc/redis/redis.conf\""  	>> /etc/supervisor/conf.d/supervisord-redis.conf
+RUN echo "command=/bin/bash -c \"redis-server /etc/redis/redis.conf\""  		>> /etc/supervisor/conf.d/supervisord-redis.conf
 RUN echo "autostart=false"                                 				>> /etc/supervisor/conf.d/supervisord-redis.conf
 RUN echo "autorestart=true"                               				>> /etc/supervisor/conf.d/supervisord-redis.conf
 RUN echo "user=root"                                      				>> /etc/supervisor/conf.d/supervisord-redis.conf
@@ -225,8 +221,6 @@ COPY ini/tips /root/useful/
 
 # --------------------------------------------------------------------------------------------------------
 # Clean before end
-RUN rm -r /usr/src/redis;
-RUN apt-get purge -y --autoremove build-essential tcl
 RUN apt-get autoclean
 RUN apt-get autoremove -y
 
