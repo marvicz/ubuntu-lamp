@@ -187,6 +187,27 @@ RUN echo "stderr_events_enabled=true"                     				>> /etc/supervisor
 
 
 
+# Install vsftpd
+# --------------------------------------------------------------------------------------------------------
+RUN apt-get install vsftpd -y
+
+# Vsftpd start via Supervisor
+RUN echo "[program:ftp]"                                    >> /etc/supervisor/conf.d/supervisord-ftp-server.conf
+RUN echo "command=/bin/bash -c \"vsftpd /etc/vsftpd.conf\"" >> /etc/supervisor/conf.d/supervisord-ftp-server.conf
+RUN echo "autostart=false"                                  >> /etc/supervisor/conf.d/supervisord-ftp-server.conf
+RUN echo "autorestart=true"                                 >> /etc/supervisor/conf.d/supervisord-ftp-server.conf
+RUN echo "user=root"                                        >> /etc/supervisor/conf.d/supervisord-ftp-server.conf
+RUN echo "stdout_events_enabled=true"                       >> /etc/supervisor/conf.d/supervisord-ftp-server.conf
+RUN echo "stderr_events_enabled=true"                       >> /etc/supervisor/conf.d/supervisord-ftp-server.conf
+
+
+RUN mv /etc/vsftpd.conf /etc/vsftpd.conf.orig
+COPY ini/vsftpd.conf /etc/
+
+
+
+
+
 # Set after startup configuration file
 # --------------------------------------------------------------------------------------------------------
 RUN echo "#!/bin/bash" >> /after-config.sh
