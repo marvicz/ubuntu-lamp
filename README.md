@@ -1,7 +1,7 @@
 # Ubuntu LAMP docker
 # Supervisor, Cron, SSH, Apache2, PHP7.0, MariaDB, FTP, Redis
 
-All services are run under supervisor. Cron and Redis are stopped by default.
+All services are run under supervisor. FTP, Cron and Redis are stopped by default.
 
 SSH    - root/root
 
