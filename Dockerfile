@@ -247,7 +247,8 @@ RUN apt-get autoremove -y
 
 
 # --------------------------------------------------------------------------------------------------------
-# Expose SSH, Apache, MariaDB
+# Expose FTP, SSH, Apache, MariaDB
+EXPOSE 21
 EXPOSE 22
 EXPOSE 80
 EXPOSE 3306
